@@ -2,7 +2,7 @@ FROM rust:1.85-slim AS builder
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y protobuf-compiler pkg-config libssl-dev && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y protobuf-compiler && rm -rf /var/lib/apt/lists/*
 
 COPY proto ./proto
 COPY backend/Cargo.toml backend/Cargo.lock ./
