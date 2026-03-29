@@ -1,5 +1,4 @@
 import {
-  DataTable,
   DataTableSkeleton,
   InlineNotification,
   Table,
@@ -13,11 +12,11 @@ import {
 import type { BlockData } from '../hooks/useStreamBlocks';
 
 const HEADERS = [
-  { key: 'height',    header: 'Height' },
-  { key: 'txCount',   header: 'Transactions' },
-  { key: 'size',      header: 'Size' },
-  { key: 'fees',      header: 'Total Fees' },
-  { key: 'timestamp', header: 'Time' },
+  { key: 'height',    label: 'Height' },
+  { key: 'txCount',   label: 'Transactions' },
+  { key: 'size',      label: 'Size' },
+  { key: 'fees',      label: 'Total Fees' },
+  { key: 'timestamp', label: 'Time' },
 ];
 
 function formatSize(bytes: number): string {
@@ -40,15 +39,6 @@ interface BlocksTableProps {
 }
 
 export function BlocksTable({ data, loading, error }: BlocksTableProps) {
-  const rows = data.map((b) => ({
-    id: b.id,
-    height: b.height.toLocaleString(),
-    txCount: b.txCount.toLocaleString(),
-    size: formatSize(b.size),
-    fees: formatFees(b.fees),
-    timestamp: formatTime(b.timestamp),
-  }));
-
   return (
     <>
       {error && (
@@ -62,41 +52,34 @@ export function BlocksTable({ data, loading, error }: BlocksTableProps) {
         />
       )}
 
-      {loading && rows.length === 0 ? (
+      {loading && data.length === 0 ? (
         <DataTableSkeleton columnCount={HEADERS.length} rowCount={5} showHeader showToolbar={false} />
       ) : (
-        <DataTable rows={rows} headers={HEADERS}>
-          {({ rows: tableRows, headers, getTableProps, getHeaderProps, getRowProps, getCellProps, getTableContainerProps }) => (
-            <TableContainer
-              title="Latest Blocks"
-              description="Live stream — new blocks appear automatically"
-              {...getTableContainerProps()}
-            >
-              <Table {...getTableProps()} size="md" useZebraStyles>
-                <TableHead>
-                  <TableRow>
-                    {headers.map((header) => (
-                      <TableHeader key={header.key} {...getHeaderProps({ header })}>
-                        {header.header}
-                      </TableHeader>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {tableRows.map((row) => (
-                    <TableRow key={row.id} {...getRowProps({ row })}>
-                      {row.cells.map((cell) => (
-                        <TableCell key={cell.id} {...getCellProps({ cell })}>
-                          {cell.value}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-        </DataTable>
+        <TableContainer
+          title="Latest Blocks"
+          description="Live stream — new blocks appear automatically"
+        >
+          <Table size="md" useZebraStyles>
+            <TableHead>
+              <TableRow>
+                {HEADERS.map((h) => (
+                  <TableHeader key={h.key}>{h.label}</TableHeader>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data.map((b) => (
+                <TableRow key={b.id}>
+                  <TableCell>{b.height.toLocaleString()}</TableCell>
+                  <TableCell>{b.txCount.toLocaleString()}</TableCell>
+                  <TableCell>{formatSize(b.size)}</TableCell>
+                  <TableCell>{formatFees(b.fees)}</TableCell>
+                  <TableCell>{formatTime(b.timestamp)}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       )}
     </>
   );
