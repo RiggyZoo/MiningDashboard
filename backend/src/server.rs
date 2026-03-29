@@ -11,34 +11,37 @@ use crate::config::Config;
 use crate::mining::mining_service_server::{MiningService, MiningServiceServer};
 use crate::mining::{
     Block, BlocksRequest, BlocksResponse, DifficultyRequest, DifficultyResponse, FeesRequest,
-    FeesResponse, HashrateRequest, HashrateResponse, MempoolTx, PriceRequest, PriceResponse,
-    StreamBlocksRequest, StreamMempoolRequest,
+    FeesResponse, HashrateRequest, HashrateResponse, MempoolTx, PriceHistoryRequest,
+    PriceHistoryResponse, PriceRequest, PriceResponse, StreamBlocksRequest, StreamMempoolRequest,
 };
 use crate::services::{
     blocks::BlocksService, difficulty::DifficultyService, fees::FeesService,
     hashrate::HashrateService, mempool::MempoolService, price::PriceService,
+    price_history::PriceHistoryService,
 };
 
 #[derive(Debug)]
 pub struct MiningServiceImpl {
-    fees:       FeesService,
-    price:      PriceService,
-    blocks:     BlocksService,
-    hashrate:   HashrateService,
-    difficulty: DifficultyService,
-    mempool:    MempoolService,
+    fees:          FeesService,
+    price:         PriceService,
+    price_history: PriceHistoryService,
+    blocks:        BlocksService,
+    hashrate:      HashrateService,
+    difficulty:    DifficultyService,
+    mempool:       MempoolService,
 }
 
 impl MiningServiceImpl {
     pub fn new(config: Config) -> Self {
         let http = Arc::new(reqwest::Client::new());
         Self {
-            fees:       FeesService::new(config.clone(), Arc::clone(&http)),
-            price:      PriceService::new(config.clone(), Arc::clone(&http)),
-            blocks:     BlocksService::new(config.clone(), Arc::clone(&http)),
-            hashrate:   HashrateService::new(config.clone(), Arc::clone(&http)),
-            difficulty: DifficultyService::new(config.clone(), Arc::clone(&http)),
-            mempool:    MempoolService::new(config, Arc::clone(&http)),
+            fees:          FeesService::new(config.clone(), Arc::clone(&http)),
+            price:         PriceService::new(config.clone(), Arc::clone(&http)),
+            price_history: PriceHistoryService::new(config.clone(), Arc::clone(&http)),
+            blocks:        BlocksService::new(config.clone(), Arc::clone(&http)),
+            hashrate:      HashrateService::new(config.clone(), Arc::clone(&http)),
+            difficulty:    DifficultyService::new(config.clone(), Arc::clone(&http)),
+            mempool:       MempoolService::new(config, Arc::clone(&http)),
         }
     }
 }
@@ -69,6 +72,10 @@ impl MiningService for MiningServiceImpl {
 
     async fn get_difficulty(&self, request: Request<DifficultyRequest>) -> Result<Response<DifficultyResponse>, Status> {
         self.difficulty.fetch_difficulty(request).await
+    }
+
+    async fn get_price_history(&self, request: Request<PriceHistoryRequest>) -> Result<Response<PriceHistoryResponse>, Status> {
+        self.price_history.fetch_price_history(request).await
     }
 
     type StreamMempoolStream = Pin<Box<dyn Stream<Item = Result<MempoolTx, Status>> + Send + 'static>>;

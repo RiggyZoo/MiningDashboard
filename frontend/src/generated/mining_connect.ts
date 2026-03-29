@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { Block, BlocksRequest, BlocksResponse, DifficultyRequest, DifficultyResponse, FeesRequest, FeesResponse, HashrateRequest, HashrateResponse, MempoolTx, PriceRequest, PriceResponse, StreamBlocksRequest, StreamMempoolRequest } from "./mining_pb.js";
+import { Block, BlocksRequest, BlocksResponse, DifficultyRequest, DifficultyResponse, FeesRequest, FeesResponse, HashrateRequest, HashrateResponse, MempoolTx, PriceHistoryRequest, PriceHistoryResponse, PriceRequest, PriceResponse, StreamBlocksRequest, StreamMempoolRequest } from "./mining_pb.js";
 import { MethodKind } from "@bufbuild/protobuf";
 
 /**
@@ -76,6 +76,17 @@ export const MiningService = {
       name: "GetDifficulty",
       I: DifficultyRequest,
       O: DifficultyResponse,
+      kind: MethodKind.Unary,
+    },
+    /**
+     * Unary: historical BTC price
+     *
+     * @generated from rpc mining.MiningService.GetPriceHistory
+     */
+    getPriceHistory: {
+      name: "GetPriceHistory",
+      I: PriceHistoryRequest,
+      O: PriceHistoryResponse,
       kind: MethodKind.Unary,
     },
     /**

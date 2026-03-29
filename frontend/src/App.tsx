@@ -5,6 +5,7 @@ import { BlocksTable } from './components/BlocksTable';
 import { HashrateCard } from './components/HashrateCard';
 import { DifficultyCard } from './components/DifficultyCard';
 import { MempoolTable } from './components/MempoolTable';
+import { PriceChart } from './components/PriceChart';
 import { useFees } from './hooks/useFees';
 import { usePrice } from './hooks/usePrice';
 import { useStreamBlocks } from './hooks/useStreamBlocks';
@@ -39,6 +40,10 @@ export default function App() {
           </Column>
           <Column sm={4} md={4} lg={4}>
             <DifficultyCard data={difficulty.data ?? null} loading={difficulty.isPending} error={difficulty.error?.message ?? null} />
+          </Column>
+
+          <Column sm={4} md={8} lg={16} style={{ marginTop: '32px' }}>
+            <PriceChart />
           </Column>
 
           <Column sm={4} md={8} lg={8} style={{ marginTop: '32px' }}>

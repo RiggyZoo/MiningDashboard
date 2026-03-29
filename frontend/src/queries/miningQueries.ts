@@ -85,3 +85,21 @@ export const difficultyOptions = queryOptions<DifficultyData>({
     query.state.status === 'error' ? 15_000 : 60_000,
   refetchIntervalInBackground: true,
 });
+
+export interface PricePoint {
+  time: number;
+  usd:  number;
+}
+
+export const priceHistoryOptions = (days: 1 | 7) => queryOptions<PricePoint[]>({
+  queryKey: ['priceHistory', days],
+  queryFn: async () => {
+    const resp = await miningClient.getPriceHistory({ days });
+    return resp.points.map((p) => ({
+      time: Number(p.time),
+      usd:  p.usd,
+    }));
+  },
+  refetchInterval: 5 * 60_000,
+  refetchIntervalInBackground: true,
+});

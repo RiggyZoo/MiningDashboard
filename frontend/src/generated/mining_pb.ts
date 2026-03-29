@@ -543,6 +543,127 @@ export class DifficultyResponse extends Message<DifficultyResponse> {
 }
 
 /**
+ * @generated from message mining.PricePoint
+ */
+export class PricePoint extends Message<PricePoint> {
+  /**
+   * unix timestamp
+   *
+   * @generated from field: int64 time = 1;
+   */
+  time = protoInt64.zero;
+
+  /**
+   * @generated from field: double usd = 2;
+   */
+  usd = 0;
+
+  constructor(data?: PartialMessage<PricePoint>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "mining.PricePoint";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "time", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
+    { no: 2, name: "usd", kind: "scalar", T: 1 /* ScalarType.DOUBLE */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): PricePoint {
+    return new PricePoint().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): PricePoint {
+    return new PricePoint().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): PricePoint {
+    return new PricePoint().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: PricePoint | PlainMessage<PricePoint> | undefined, b: PricePoint | PlainMessage<PricePoint> | undefined): boolean {
+    return proto3.util.equals(PricePoint, a, b);
+  }
+}
+
+/**
+ * @generated from message mining.PriceHistoryRequest
+ */
+export class PriceHistoryRequest extends Message<PriceHistoryRequest> {
+  /**
+   * 1 or 7
+   *
+   * @generated from field: uint32 days = 1;
+   */
+  days = 0;
+
+  constructor(data?: PartialMessage<PriceHistoryRequest>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "mining.PriceHistoryRequest";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "days", kind: "scalar", T: 13 /* ScalarType.UINT32 */ },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): PriceHistoryRequest {
+    return new PriceHistoryRequest().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): PriceHistoryRequest {
+    return new PriceHistoryRequest().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): PriceHistoryRequest {
+    return new PriceHistoryRequest().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: PriceHistoryRequest | PlainMessage<PriceHistoryRequest> | undefined, b: PriceHistoryRequest | PlainMessage<PriceHistoryRequest> | undefined): boolean {
+    return proto3.util.equals(PriceHistoryRequest, a, b);
+  }
+}
+
+/**
+ * @generated from message mining.PriceHistoryResponse
+ */
+export class PriceHistoryResponse extends Message<PriceHistoryResponse> {
+  /**
+   * @generated from field: repeated mining.PricePoint points = 1;
+   */
+  points: PricePoint[] = [];
+
+  constructor(data?: PartialMessage<PriceHistoryResponse>) {
+    super();
+    proto3.util.initPartial(data, this);
+  }
+
+  static readonly runtime: typeof proto3 = proto3;
+  static readonly typeName = "mining.PriceHistoryResponse";
+  static readonly fields: FieldList = proto3.util.newFieldList(() => [
+    { no: 1, name: "points", kind: "message", T: PricePoint, repeated: true },
+  ]);
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): PriceHistoryResponse {
+    return new PriceHistoryResponse().fromBinary(bytes, options);
+  }
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): PriceHistoryResponse {
+    return new PriceHistoryResponse().fromJson(jsonValue, options);
+  }
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): PriceHistoryResponse {
+    return new PriceHistoryResponse().fromJsonString(jsonString, options);
+  }
+
+  static equals(a: PriceHistoryResponse | PlainMessage<PriceHistoryResponse> | undefined, b: PriceHistoryResponse | PlainMessage<PriceHistoryResponse> | undefined): boolean {
+    return proto3.util.equals(PriceHistoryResponse, a, b);
+  }
+}
+
+/**
  * @generated from message mining.MempoolTx
  */
 export class MempoolTx extends Message<MempoolTx> {
