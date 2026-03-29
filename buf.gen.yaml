@@ -1,0 +1,13 @@
+version: v2
+clean: true
+plugins:
+  - local: ["node", "./frontend/node_modules/@bufbuild/protoc-gen-es/bin/protoc-gen-es"]
+    out: frontend/src/generated
+    opt: target=ts
+
+  - local: ["node", "./frontend/node_modules/@connectrpc/protoc-gen-connect-es/bin/protoc-gen-connect-es"]
+    out: frontend/src/generated
+    opt: target=ts
+
+inputs:
+  - directory: proto

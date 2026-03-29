@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package mining;
+
+// ─── Fees ────────────────────────────────────────────────────────────────────
+
+message FeesRequest {}
+
+message FeesResponse {
+  uint32 fastest_fee   = 1; // sat/vB, next block
+  uint32 half_hour_fee = 2; // sat/vB, ~30 min
+  uint32 hour_fee      = 3; // sat/vB, ~1 hour
+  uint32 economy_fee   = 4; // sat/vB, economy
+}
+
+// ─── Price ───────────────────────────────────────────────────────────────────
+
+message PriceRequest {}
+
+message PriceResponse {
+  double usd = 1; // BTC price in USD
+}
+
+// ─── Blocks ──────────────────────────────────────────────────────────────────
+
+message Block {
+  string id        = 1; // block hash
+  uint32 height    = 2;
+  int64  timestamp = 3; // unix timestamp
+  uint32 tx_count  = 4;
+  uint64 size      = 5; // bytes
+  uint64 weight    = 6; // weight units
+  uint64 fees      = 7; // total fees in satoshis
+}
+
+message BlocksRequest {
+  uint32 limit = 1; // how many recent blocks to return
+}
+
+message BlocksResponse {
+  repeated Block blocks = 1;
+}
+
+message StreamBlocksRequest {}
+
+// ─── Hashrate ────────────────────────────────────────────────────────────────
+
+message HashrateRequest {}
+
+message HashrateResponse {
+  double current_hashrate   = 1; // H/s
+  double current_difficulty = 2;
+}
+
+// ─── Difficulty ──────────────────────────────────────────────────────────────
+
+message DifficultyRequest {}
+
+message DifficultyResponse {
+  double progress_percent      = 1; // 0-100
+  double difficulty_change     = 2; // expected % change
+  int64  estimated_retarget    = 3; // unix ms
+  int32  remaining_blocks      = 4;
+  int32  next_retarget_height  = 5;
+  double previous_retarget     = 6; // % change at last adjustment
+}
+
+// ─── Mempool transactions ────────────────────────────────────────────────────
+
+message MempoolTx {
+  string txid  = 1;
+  uint64 fee   = 2; // satoshis
+  uint32 vsize = 3; // virtual bytes
+  uint64 value = 4; // satoshis output value
+}
+
+message StreamMempoolRequest {}
+
+// ─── Service ─────────────────────────────────────────────────────────────────
+
+service MiningService {
+  // Unary: current mempool fee estimates
+  rpc GetFees(FeesRequest) returns (FeesResponse);
+
+  // Unary: current BTC price in USD
+  rpc GetPrice(PriceRequest) returns (PriceResponse);
+
+  // Unary: recent confirmed blocks
+  rpc GetBlocks(BlocksRequest) returns (BlocksResponse);
+
+  // Server-streaming: push new blocks as they are mined
+  rpc StreamBlocks(StreamBlocksRequest) returns (stream Block);
+
+  // Unary: current network hashrate and difficulty
+  rpc GetHashrate(HashrateRequest) returns (HashrateResponse);
+
+  // Unary: current difficulty adjustment progress
+  rpc GetDifficulty(DifficultyRequest) returns (DifficultyResponse);
+
+  // Server-streaming: push new mempool transactions every 10s
+  rpc StreamMempool(StreamMempoolRequest) returns (stream MempoolTx);
+}
