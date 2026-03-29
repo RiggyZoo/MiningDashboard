@@ -27,7 +27,7 @@ export const useBlocksStore = create<BlocksState>()(
   subscribeWithSelector(() => initialState)
 );
 
-// Module-level actions — вызываются из gRPC стрима вне React
+// Module-level actions — called from gRPC stream outside React
 export const pushBlock = (block: BlockData) =>
   useBlocksStore.setState((state) => ({
     blocks: [block, ...state.blocks].slice(0, 20),

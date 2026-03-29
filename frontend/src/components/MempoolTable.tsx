@@ -104,7 +104,7 @@ export function MempoolTable() {
 
       <TableContainer
         title="Mempool Transactions"
-        description="Live WebSocket · новые транзакции в реальном времени"
+        description="Unconfirmed transactions streaming in real time"
       >
         <div style={{ padding: '8px 16px 12px', display: 'flex', gap: '4px' }}>
           {FILTERS.map((f) => {

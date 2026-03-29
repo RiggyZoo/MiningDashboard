@@ -9,7 +9,7 @@ import { queryClient } from './queries/queryClient.ts';
 import { startBlocksStream } from './services/blocksStream.ts';
 import { startMempoolWS } from './services/mempoolWS.ts';
 
-// Запускаем стримы один раз при старте приложения — вне React
+// Start streams once on app startup — outside React
 startBlocksStream();
 startMempoolWS();
 
