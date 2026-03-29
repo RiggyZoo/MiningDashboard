@@ -1,4 +1,5 @@
 use std::pin::Pin;
+use std::sync::Arc;
 use std::time::Duration;
 
 use tokio::sync::mpsc;
@@ -12,18 +13,21 @@ use crate::mining::{Block, BlocksRequest, BlocksResponse, StreamBlocksRequest};
 #[derive(Debug)]
 pub struct BlocksService {
     base_url: String,
+    http:     Arc<reqwest::Client>,
 }
 
 impl BlocksService {
-    pub fn new(config: Config) -> Self {
-        Self { base_url: config.mempool_base_url }
+    pub fn new(config: Config, http: Arc<reqwest::Client>) -> Self {
+        Self { base_url: config.mempool_base_url, http }
     }
 
     pub async fn fetch_blocks(&self, req: Request<BlocksRequest>) -> Result<Response<BlocksResponse>, Status> {
         let limit = req.into_inner().limit.max(1).min(15) as usize;
         let url = format!("{}/v1/blocks", self.base_url);
 
-        let data: serde_json::Value = reqwest::get(&url)
+        let data: serde_json::Value = self.http
+            .get(&url)
+            .send()
             .await
             .map_err(AppError::Http)?
             .json()
@@ -49,6 +53,7 @@ impl BlocksService {
     ) -> Result<Response<Pin<Box<dyn Stream<Item = Result<Block, Status>> + Send + 'static>>>, Status>
     {
         let base_url = self.base_url.clone();
+        let http = Arc::clone(&self.http);
         let (tx, rx) = mpsc::channel(16);
 
         tokio::spawn(async move {
@@ -59,7 +64,7 @@ impl BlocksService {
             loop {
                 interval.tick().await;
 
-                match reqwest::get(&url).await {
+                match http.get(&url).send().await {
                     Ok(resp) => {
                         if let Ok(data) = resp.json::<serde_json::Value>().await {
                             if let Some(arr) = data.as_array() {

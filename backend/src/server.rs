@@ -1,4 +1,5 @@
 use std::pin::Pin;
+use std::sync::Arc;
 
 use http::{header::HeaderName, Method};
 use tokio_stream::Stream;
@@ -30,13 +31,14 @@ pub struct MiningServiceImpl {
 
 impl MiningServiceImpl {
     pub fn new(config: Config) -> Self {
+        let http = Arc::new(reqwest::Client::new());
         Self {
-            fees:       FeesService::new(config.clone()),
-            price:      PriceService::new(config.clone()),
-            blocks:     BlocksService::new(config.clone()),
-            hashrate:   HashrateService::new(config.clone()),
-            difficulty: DifficultyService::new(config.clone()),
-            mempool:    MempoolService::new(config),
+            fees:       FeesService::new(config.clone(), Arc::clone(&http)),
+            price:      PriceService::new(config.clone(), Arc::clone(&http)),
+            blocks:     BlocksService::new(config.clone(), Arc::clone(&http)),
+            hashrate:   HashrateService::new(config.clone(), Arc::clone(&http)),
+            difficulty: DifficultyService::new(config.clone(), Arc::clone(&http)),
+            mempool:    MempoolService::new(config, Arc::clone(&http)),
         }
     }
 }

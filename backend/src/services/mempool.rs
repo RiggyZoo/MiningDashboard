@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::pin::Pin;
+use std::sync::Arc;
 use std::time::Duration;
 
 use tokio::sync::mpsc;
@@ -12,11 +13,12 @@ use crate::mining::{MempoolTx, StreamMempoolRequest};
 #[derive(Debug)]
 pub struct MempoolService {
     base_url: String,
+    http:     Arc<reqwest::Client>,
 }
 
 impl MempoolService {
-    pub fn new(config: Config) -> Self {
-        Self { base_url: config.mempool_base_url }
+    pub fn new(config: Config, http: Arc<reqwest::Client>) -> Self {
+        Self { base_url: config.mempool_base_url, http }
     }
 
     pub async fn stream_mempool(
@@ -25,6 +27,7 @@ impl MempoolService {
     ) -> Result<Response<Pin<Box<dyn Stream<Item = Result<MempoolTx, Status>> + Send + 'static>>>, Status>
     {
         let base_url = self.base_url.clone();
+        let http = Arc::clone(&self.http);
         let (tx, rx) = mpsc::channel(64);
 
         tokio::spawn(async move {
@@ -35,9 +38,7 @@ impl MempoolService {
             loop {
                 interval.tick().await;
 
-                let result = reqwest::get(&url).await;
-
-                match result {
+                match http.get(&url).send().await {
                     Ok(resp) => {
                         if let Ok(data) = resp.json::<serde_json::Value>().await {
                             if let Some(arr) = data.as_array() {
