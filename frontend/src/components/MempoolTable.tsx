@@ -37,13 +37,8 @@ function formatBtc(sats: number): string {
 }
 
 export function MempoolTable() {
-  const allTxs    = useMempoolStore((state) => state.allTxs);
   const filter    = useMempoolStore((state) => state.filter);
-  const txs = allTxs.filter((tx) => {
-    if (filter === 'highfee') return tx.feeRate >= 50;
-    if (filter === 'whale')   return tx.value >= 1e8;
-    return true;
-  }).slice(0, 10);
+  const txs       = useMempoolStore((state) => state.txsByFilter[filter]);
   const connected = useMempoolStore((state) => state.connected);
   const error     = useMempoolStore((state) => state.error);
   const loading   = !connected && txs.length === 0;
