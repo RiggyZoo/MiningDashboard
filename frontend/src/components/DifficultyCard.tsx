@@ -44,7 +44,6 @@ export function DifficultyCard({ data, loading, error }: DifficultyCardProps) {
             </div>
           </div>
 
-          {/* Stats */}
           {[
             ['Expected change', <span style={{ color: changeColor, fontWeight: 600 }}>{formatChange(data.difficultyChange)}</span>],
             ['Previous retarget', <span style={{ color: data.previousRetarget >= 0 ? 'var(--cds-support-success)' : 'var(--cds-support-error)', fontWeight: 600 }}>{formatChange(data.previousRetarget)}</span>],

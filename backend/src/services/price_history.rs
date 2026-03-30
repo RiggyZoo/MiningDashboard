@@ -40,7 +40,7 @@ impl PriceHistoryService {
             .as_array()
             .ok_or_else(|| Status::internal("missing prices array"))?;
 
-        // API возвращает от новых к старым, берём нужное кол-во точек
+        // API returns from newest to oldest, take the required number of points
         let limit = (days as usize) * 24;
         let points = arr
             .iter()
@@ -52,7 +52,7 @@ impl PriceHistoryService {
             })
             .collect::<Vec<_>>()
             .into_iter()
-            .rev() // от старых к новым для графика
+            .rev() // reverse to chronological order for the chart
             .collect();
 
         Ok(Response::new(PriceHistoryResponse { points }))
