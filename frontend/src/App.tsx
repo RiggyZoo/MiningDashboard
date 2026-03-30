@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Grid, Column, Theme } from '@carbon/react';
 import { FeeCard } from './components/FeeCard';
 import { PriceCard } from './components/PriceCard';
@@ -11,6 +12,8 @@ import { usePrice } from './hooks/usePrice';
 import { useStreamBlocks } from './hooks/useStreamBlocks';
 import { useHashrate } from './hooks/useHashrate';
 import { useDifficulty } from './hooks/useDifficulty';
+import { startBlocksStream, stopBlocksStream } from './services/blocksStream';
+import { startMempoolWS, stopMempoolWS } from './services/mempoolWS';
 
 export default function App() {
   const fees       = useFees();
@@ -18,6 +21,15 @@ export default function App() {
   const blocks     = useStreamBlocks();
   const hashrate   = useHashrate();
   const difficulty = useDifficulty();
+
+  useEffect(() => {
+    startBlocksStream();
+    startMempoolWS();
+    return () => {
+      stopBlocksStream();
+      stopMempoolWS();
+    };
+  }, []);
 
   return (
     <Theme theme="g100">

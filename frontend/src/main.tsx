@@ -6,12 +6,6 @@ import '@carbon/react/index.scss';
 import './index.css';
 import App from './App.tsx';
 import { queryClient } from './queries/queryClient.ts';
-import { startBlocksStream } from './services/blocksStream.ts';
-import { startMempoolWS } from './services/mempoolWS.ts';
-
-// Start streams once on app startup — outside React
-startBlocksStream();
-startMempoolWS();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

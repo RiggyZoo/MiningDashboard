@@ -36,7 +36,10 @@ impl MempoolService {
             let url = format!("{}/mempool/recent", base_url);
 
             loop {
-                interval.tick().await;
+                tokio::select! {
+                    _ = tx.closed() => break,
+                    _ = interval.tick() => {}
+                }
 
                 match http.get(&url).send().await {
                     Ok(resp) => {

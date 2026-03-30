@@ -5,6 +5,26 @@ import {
   type MempoolTxData,
 } from '../stores/mempoolStore';
 
+interface RawVout {
+  value?: number;
+}
+
+interface RawTx {
+  txid?: string;
+  fee?: number;
+  vsize?: number;
+  adjustedVsize?: number;
+  adjustedFeePerVsize?: number;
+  effectiveFeePerVsize?: number;
+  vout?: RawVout[];
+}
+
+interface MempoolWsMessage {
+  'mempool-transactions'?: {
+    added?: RawTx[];
+  };
+}
+
 const WS_URL = import.meta.env['VITE_MEMPOOL_WS_URL'] as string ?? 'wss://mempool.space/api/v1/ws';
 
 let ws: WebSocket | null = null;
@@ -41,14 +61,14 @@ export function startMempoolWS() {
 
   ws.onmessage = (event) => {
     try {
-      const msg = JSON.parse(event.data as string);
+      const msg = JSON.parse(event.data as string) as MempoolWsMessage;
       const added = msg['mempool-transactions']?.added;
       if (!Array.isArray(added) || added.length === 0) return;
 
       const txs: MempoolTxData[] = added
-        .map((tx: any) => {
+        .map((tx) => {
           const value = Array.isArray(tx.vout)
-            ? (tx.vout as any[]).reduce((s: number, o: any) => s + (o.value ?? 0), 0)
+            ? tx.vout.reduce((s, o) => s + (o.value ?? 0), 0)
             : 0;
           return {
             txid:    tx.txid ?? '',
@@ -58,7 +78,7 @@ export function startMempoolWS() {
             value,
           };
         })
-        .filter((tx: MempoolTxData) => tx.txid !== '');
+        .filter((tx): tx is MempoolTxData => tx.txid !== '');
 
       scheduleTxs(txs);
     } catch {

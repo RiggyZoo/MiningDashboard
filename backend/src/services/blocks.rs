@@ -62,7 +62,11 @@ impl BlocksService {
             let url = format!("{}/v1/blocks", base_url);
 
             loop {
-                interval.tick().await;
+                tokio::select! {
+                    // Stop when the receiver is dropped (client disconnected)
+                    _ = tx.closed() => break,
+                    _ = interval.tick() => {}
+                }
 
                 match http.get(&url).send().await {
                     Ok(resp) => {
@@ -99,13 +103,26 @@ impl BlocksService {
 }
 
 fn parse_block(v: &serde_json::Value) -> Result<Block, Status> {
-    Ok(Block {
-        id:        v["id"].as_str().unwrap_or_default().to_string(),
-        height:    v["height"].as_u64().unwrap_or(0) as u32,
-        timestamp: v["timestamp"].as_i64().unwrap_or(0),
-        tx_count:  v["tx_count"].as_u64().unwrap_or(0) as u32,
-        size:      v["size"].as_u64().unwrap_or(0),
-        weight:    v["weight"].as_u64().unwrap_or(0),
-        fees:      v["extras"]["totalFees"].as_u64().unwrap_or(0),
-    })
+    let id = v["id"]
+        .as_str()
+        .ok_or_else(|| Status::internal("block missing 'id'"))?
+        .to_string();
+    let height = v["height"]
+        .as_u64()
+        .ok_or_else(|| Status::internal("block missing 'height'"))? as u32;
+    let timestamp = v["timestamp"]
+        .as_i64()
+        .ok_or_else(|| Status::internal("block missing 'timestamp'"))?;
+    let tx_count = v["tx_count"]
+        .as_u64()
+        .ok_or_else(|| Status::internal("block missing 'tx_count'"))? as u32;
+    let size = v["size"]
+        .as_u64()
+        .ok_or_else(|| Status::internal("block missing 'size'"))?;
+    let weight = v["weight"]
+        .as_u64()
+        .ok_or_else(|| Status::internal("block missing 'weight'"))?;
+    let fees = v["extras"]["totalFees"].as_u64().unwrap_or(0);
+
+    Ok(Block { id, height, timestamp, tx_count, size, weight, fees })
 }

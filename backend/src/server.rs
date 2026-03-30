@@ -1,7 +1,9 @@
 use std::pin::Pin;
 use std::sync::Arc;
 
-use http::{header::HeaderName, Method};
+use std::time::Duration;
+
+use http::{header::HeaderName, HeaderValue, Method};
 use tokio_stream::Stream;
 use tonic::{Request, Response, Status};
 use tonic_web::GrpcWebLayer;
@@ -33,7 +35,12 @@ pub struct MiningServiceImpl {
 
 impl MiningServiceImpl {
     pub fn new(config: Config) -> Self {
-        let http = Arc::new(reqwest::Client::new());
+        let http = Arc::new(
+            reqwest::Client::builder()
+                .timeout(Duration::from_secs(10))
+                .build()
+                .expect("failed to build HTTP client"),
+        );
         Self {
             fees:          FeesService::new(config.clone(), Arc::clone(&http)),
             price:         PriceService::new(config.clone(), Arc::clone(&http)),
@@ -87,12 +94,18 @@ impl MiningService for MiningServiceImpl {
 
 pub async fn run(config: Config) -> Result<(), Box<dyn std::error::Error>> {
     let addr = config.grpc_addr.parse()?;
+    let allowed_origins: Vec<HeaderValue> = config
+        .cors_allowed_origins
+        .iter()
+        .map(|s| s.parse().unwrap_or_else(|_| panic!("invalid CORS origin: {s}")))
+        .collect();
+
     let svc = MiningServiceImpl::new(config);
 
     println!("MiningService listening on {addr}");
 
     let cors = CorsLayer::new()
-        .allow_origin(AllowOrigin::any())
+        .allow_origin(AllowOrigin::list(allowed_origins))
         .allow_methods([Method::POST, Method::OPTIONS])
         .allow_headers([
             HeaderName::from_static("content-type"),
@@ -110,8 +123,15 @@ pub async fn run(config: Config) -> Result<(), Box<dyn std::error::Error>> {
         .layer(cors)
         .layer(GrpcWebLayer::new())
         .add_service(MiningServiceServer::new(svc))
-        .serve(addr)
+        .serve_with_shutdown(addr, shutdown_signal())
         .await?;
 
     Ok(())
+}
+
+async fn shutdown_signal() {
+    tokio::signal::ctrl_c()
+        .await
+        .expect("failed to listen for ctrl+c");
+    println!("Shutting down...");
 }

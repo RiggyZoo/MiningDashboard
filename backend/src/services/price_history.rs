@@ -21,7 +21,10 @@ impl PriceHistoryService {
         &self,
         req: Request<PriceHistoryRequest>,
     ) -> Result<Response<PriceHistoryResponse>, Status> {
-        let days = req.into_inner().days.max(1).min(7);
+        let days = req.into_inner().days;
+        if days != 1 && days != 7 {
+            return Err(Status::invalid_argument("days must be 1 or 7"));
+        }
         let url = format!("{}/v1/historical-price?currency=USD&interval=1h", self.base_url);
 
         let data: serde_json::Value = self.http
