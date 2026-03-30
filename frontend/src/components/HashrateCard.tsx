@@ -1,18 +1,6 @@
 import { Tile, InlineLoading, InlineNotification } from '@carbon/react';
 import type { HashrateData } from '../hooks/useHashrate';
-
-function formatHashrate(hs: number): string {
-  if (hs >= 1e21) return `${(hs / 1e21).toFixed(2)} ZH/s`;
-  if (hs >= 1e18) return `${(hs / 1e18).toFixed(2)} EH/s`;
-  if (hs >= 1e15) return `${(hs / 1e15).toFixed(2)} PH/s`;
-  return `${(hs / 1e12).toFixed(2)} TH/s`;
-}
-
-function formatDifficulty(d: number): string {
-  if (d >= 1e12) return `${(d / 1e12).toFixed(2)} T`;
-  if (d >= 1e9) return `${(d / 1e9).toFixed(2)} G`;
-  return d.toLocaleString();
-}
+import { formatHashrate, formatDifficulty } from '../utils/format';
 
 interface HashrateCardProps {
   data: HashrateData | null;

@@ -2,26 +2,7 @@
   "permissions": {
     "allow": [
       "mcp__context7__resolve-library-id",
-      "mcp__context7__query-docs",
-      "Bash(cargo build:*)",
-      "Bash(npm create:*)",
-      "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(npm install:*)",
-      "Bash(npx tsc:*)",
-      "Bash(npm list:*)",
-      "Bash(find /c/Users/nikit/WebstormProjects/MiningDashboard -maxdepth 1 -type f -name *)",
-      "Bash(grep -E \"\\\\.\\(env|config|yml|yaml\\)$\")",
-      "Bash(sed -i \"s|from ''../generated/mining_pb''|from ''mining-proto/mining_pb''|g\" C:/Users/nikit/WebstormProjects/MiningDashboard/frontend/src/hooks/useFees.ts C:/Users/nikit/WebstormProjects/MiningDashboard/frontend/src/hooks/usePrice.ts)",
-      "Bash(sed -i \"s|from \"\"../generated/mining_pb\"\"|from ''mining-proto/mining_pb''|g\" C:/Users/nikit/WebstormProjects/MiningDashboard/frontend/src/hooks/useStreamBlocks.ts)",
-      "Bash(curl -s \"https://mempool.space/api/v1/mining/hashrate/1m\")",
-      "Bash(curl -s \"https://mempool.space/api/v1/difficulty-adjustment\" echo \"---\" curl -s \"https://mempool.space/api/v1/mining/hashrate/1m\")",
-      "WebFetch(domain:docs.mempoolnode.com)",
-      "WebFetch(domain:medium.com)",
-      "WebFetch(domain:github.com)",
-      "WebSearch",
-      "Bash(npm show:*)",
-      "Bash(curl -s \"https://mempool.space/api/v1/historical-price?currency=USD&interval=1d\")",
-      "Bash(./frontend/node_modules/.bin/buf generate:*)"
+      "mcp__context7__query-docs"
     ]
   }
 }

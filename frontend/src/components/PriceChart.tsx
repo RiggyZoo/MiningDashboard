@@ -11,20 +11,9 @@ import {
   CartesianGrid,
 } from 'recharts';
 import { priceHistoryOptions } from '../queries/miningQueries';
+import { formatPrice, formatChartTime } from '../utils/format';
 
 type Range = 1 | 7;
-
-function formatPrice(usd: number): string {
-  return `$${usd.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
-}
-
-function formatTime(unix: number, days: Range): string {
-  const date = new Date(unix * 1000);
-  if (days === 1) {
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-  }
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
 
 export function PriceChart() {
   const [range, setRange] = useState<Range>(1);
@@ -90,7 +79,7 @@ export function PriceChart() {
               <CartesianGrid strokeDasharray="3 3" stroke="var(--cds-border-subtle)" />
               <XAxis
                 dataKey="time"
-                tickFormatter={(t) => formatTime(t, range)}
+                tickFormatter={(t) => formatChartTime(t, range)}
                 tick={{ fontSize: 11, fill: 'var(--cds-text-secondary)' }}
                 tickLine={false}
                 axisLine={false}
@@ -111,7 +100,7 @@ export function PriceChart() {
                   borderRadius: '4px',
                   fontSize: '12px',
                 }}
-                labelFormatter={(t) => formatTime(t as number, range)}
+                labelFormatter={(t) => formatChartTime(t as number, range)}
                 formatter={(v) => [formatPrice(v as number), 'BTC']}
               />
               <Area

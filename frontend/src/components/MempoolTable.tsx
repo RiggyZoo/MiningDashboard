@@ -11,6 +11,7 @@ import {
   TableRow,
 } from '@carbon/react';
 import { useMempoolStore, setMempoolFilter, type MempoolFilter } from '../stores/mempoolStore';
+import { shortTxid, formatSatsToBtc } from '../utils/format';
 
 const HEADERS = [
   { key: 'txid',    header: 'Transaction ID' },
@@ -27,14 +28,6 @@ const FILTERS: { id: MempoolFilter; text: string }[] = [
 ];
 
 const HIGHLIGHT_MS = 1500;
-
-function shortTxid(txid: string): string {
-  return `${txid.slice(0, 10)}…${txid.slice(-10)}`;
-}
-
-function formatBtc(sats: number): string {
-  return sats > 0 ? (sats / 1e8).toFixed(4) : '—';
-}
 
 export function MempoolTable() {
   const filter    = useMempoolStore((state) => state.filter);
@@ -161,7 +154,7 @@ export function MempoolTable() {
                     <TableCell>{tx.fee > 0 ? tx.fee.toLocaleString() : '—'}</TableCell>
                     <TableCell>{tx.vsize > 0 ? tx.vsize.toLocaleString() : '—'}</TableCell>
                     <TableCell>{tx.feeRate > 0 ? tx.feeRate.toFixed(1) : '—'}</TableCell>
-                    <TableCell>{formatBtc(tx.value)}</TableCell>
+                    <TableCell>{formatSatsToBtc(tx.value)}</TableCell>
                   </TableRow>
                 );
               })}

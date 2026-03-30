@@ -1,5 +1,6 @@
 import { Tile, InlineLoading, InlineNotification } from '@carbon/react';
 import type { PriceData } from '../hooks/usePrice';
+import { formatPriceFull } from '../utils/format';
 
 interface PriceCardProps {
   data: PriceData | null;
@@ -8,9 +9,7 @@ interface PriceCardProps {
 }
 
 export function PriceCard({ data, loading, error }: PriceCardProps) {
-  const formatted = data
-    ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(data.usd)
-    : null;
+  const formatted = data ? formatPriceFull(data.usd) : null;
 
   return (
     <Tile style={{ height: '100%' }}>

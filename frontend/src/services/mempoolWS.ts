@@ -5,7 +5,7 @@ import {
   type MempoolTxData,
 } from '../stores/mempoolStore';
 
-const WS_URL = 'wss://mempool.space/api/v1/ws';
+const WS_URL = import.meta.env['VITE_MEMPOOL_WS_URL'] as string ?? 'wss://mempool.space/api/v1/ws';
 
 let ws: WebSocket | null = null;
 let retryCount = 0;

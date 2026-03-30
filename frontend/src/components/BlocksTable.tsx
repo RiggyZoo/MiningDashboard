@@ -10,6 +10,7 @@ import {
   TableRow,
 } from '@carbon/react';
 import type { BlockData } from '../hooks/useStreamBlocks';
+import { formatSize, formatBtcFees, formatUnixTime } from '../utils/format';
 
 const HEADERS = [
   { key: 'height',    label: 'Height' },
@@ -18,19 +19,6 @@ const HEADERS = [
   { key: 'fees',      label: 'Total Fees' },
   { key: 'timestamp', label: 'Time' },
 ];
-
-function formatSize(bytes: number): string {
-  if (bytes >= 1_000_000) return `${(bytes / 1_000_000).toFixed(2)} MB`;
-  return `${(bytes / 1_000).toFixed(1)} KB`;
-}
-
-function formatFees(sats: number): string {
-  return `${(sats / 1e8).toFixed(4)} BTC`;
-}
-
-function formatTime(unix: number): string {
-  return new Date(unix * 1000).toLocaleTimeString();
-}
 
 interface BlocksTableProps {
   data: BlockData[];
@@ -73,8 +61,8 @@ export function BlocksTable({ data, loading, error }: BlocksTableProps) {
                   <TableCell>{b.height.toLocaleString()}</TableCell>
                   <TableCell>{b.txCount.toLocaleString()}</TableCell>
                   <TableCell>{formatSize(b.size)}</TableCell>
-                  <TableCell>{formatFees(b.fees)}</TableCell>
-                  <TableCell>{formatTime(b.timestamp)}</TableCell>
+                  <TableCell>{formatBtcFees(b.fees)}</TableCell>
+                  <TableCell>{formatUnixTime(b.timestamp)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

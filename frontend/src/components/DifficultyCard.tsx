@@ -1,14 +1,6 @@
 import { Tile, InlineLoading, InlineNotification } from '@carbon/react';
 import type { DifficultyData } from '../hooks/useDifficulty';
-
-function formatChange(pct: number): string {
-  const sign = pct >= 0 ? '+' : '';
-  return `${sign}${pct.toFixed(2)}%`;
-}
-
-function formatDate(ms: number): string {
-  return new Date(ms).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-}
+import { formatChange, formatUnixDate } from '../utils/format';
 
 interface DifficultyCardProps {
   data: DifficultyData | null;
@@ -58,7 +50,7 @@ export function DifficultyCard({ data, loading, error }: DifficultyCardProps) {
             ['Previous retarget', <span style={{ color: data.previousRetarget >= 0 ? 'var(--cds-support-success)' : 'var(--cds-support-error)', fontWeight: 600 }}>{formatChange(data.previousRetarget)}</span>],
             ['Remaining blocks', data.remainingBlocks.toLocaleString()],
             ['Next retarget', `#${data.nextRetargetHeight.toLocaleString()}`],
-            ['Est. date', formatDate(Number(data.estimatedRetarget))],
+            ['Est. date', formatUnixDate(Number(data.estimatedRetarget))],
           ].map(([label, value]) => (
             <div key={String(label)} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid var(--cds-border-subtle)' }}>
               <span style={{ color: 'var(--cds-text-secondary)', fontSize: '13px' }}>{label}</span>
